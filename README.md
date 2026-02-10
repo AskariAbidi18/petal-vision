@@ -83,12 +83,11 @@ These metrics indicate moderate but meaningful structure, which is expected for 
 
 ---
 
+```md
 ## 🚀 How to Run
+
 ```bash
 python main.py
-```
-
-The pipeline is incremental and safe to re-run. Only new images are processed.
 
 ## 📝 Notes
 
