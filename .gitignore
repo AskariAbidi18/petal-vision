@@ -1,0 +1,50 @@
+# =====================
+# Python
+# =====================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.env
+.venv/
+venv/
+ENV/
+
+# =====================
+# OS / Editor junk
+# =====================
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# =====================
+# Logs & temp files
+# =====================
+*.log
+*.tmp
+*.bak
+*.swp
+
+# =====================
+# Data & Images
+# =====================
+data/
+outputs/
+results/
+
+# =====================
+# Model / cache files
+# =====================
+*.h5
+*.pkl
+*.joblib
+*.npy
+*.npz
+
+# =====================
+# Jupyter
+# =====================
+.ipynb_checkpoints/
+
