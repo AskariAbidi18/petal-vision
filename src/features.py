@@ -10,37 +10,39 @@ OUTPUT_CSV = "results/features.csv"
 os.makedirs("results", exist_ok=True)
 
 def extract_features():
-    records = []
+    if os.path.exists(OUTPUT_CSV):
+        existing_df = pd.read_csv(OUTPUT_CSV)
+        processed_images = set(existing_df["image"])
+        records = existing_df.values.tolist()
+    else:
+        processed_images = set()
+        records = []
 
-    files = sorted([
+    input_files = sorted([
         f for f in os.listdir(INPUT_DIR)
         if f.lower().endswith(".jpg")
     ])
 
-    total = len(files)
-    print(f"Starting feature extraction for {total} images...\n")
+    new_count = 0
 
-    for idx, filename in enumerate(files):
-        # Progress indicator
-        print(f"Processing {idx + 1}/{total}: {filename}", end="\r")
+    for filename in input_files:
+        if filename in processed_images:
+            continue  # already extracted
 
         path = os.path.join(INPUT_DIR, filename)
         img = cv2.imread(path)
-
         if img is None:
             continue
 
         h, w = img.shape[:2]
         img_area = h * w
 
-        # Mask: non-black pixels are flower
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         _, mask = cv2.threshold(gray, 1, 255, cv2.THRESH_BINARY)
 
         flower_area = cv2.countNonZero(mask)
-        area_ratio = flower_area / img_area if img_area > 0 else 0
+        area_ratio = flower_area / img_area if img_area else 0
 
-        # Contours
         contours, _ = cv2.findContours(
             mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
         )
@@ -56,7 +58,6 @@ def extract_features():
             perimeter = 0
             circularity = 0
 
-        # Color features (HSV)
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
         h_vals = hsv[:, :, 0][mask > 0]
@@ -67,7 +68,6 @@ def extract_features():
         mean_s = np.mean(s_vals) if len(s_vals) else 0
         mean_v = np.mean(v_vals) if len(v_vals) else 0
 
-        # Texture feature (GLCM contrast)
         gray_small = cv2.resize(gray, (128, 128))
         glcm = graycomatrix(
             gray_small,
@@ -90,9 +90,7 @@ def extract_features():
             contrast
         ])
 
-        # Occasional newline so terminal doesn’t feel frozen
-        if (idx + 1) % 25 == 0:
-            print(f"\nProcessed {idx + 1}/{total} images...")
+        new_count += 1
 
     columns = [
         "image",
@@ -108,8 +106,7 @@ def extract_features():
     df = pd.DataFrame(records, columns=columns)
     df.to_csv(OUTPUT_CSV, index=False)
 
-    print(f"\n\nDone. Extracted features for {len(df)} images.")
-    print(f"Saved to {OUTPUT_CSV}")
+    print(f"Feature extraction done. New images processed: {new_count}")
 
 if __name__ == "__main__":
     extract_features()

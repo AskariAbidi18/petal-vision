@@ -4,6 +4,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
+from sklearn.metrics import silhouette_score
+from sklearn.metrics import silhouette_score
 
 FEATURES_PATH = "results/features_final.csv"
 FEATURES_WITH_ID_PATH = "results/features_final_with_id.csv"
@@ -51,6 +53,17 @@ def run_clustering():
 
     kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
     labels = kmeans.fit_predict(X)
+
+    from sklearn.metrics import silhouette_score, davies_bouldin_score
+
+    print("\nComputing clustering metrics...")
+
+    sil_score = silhouette_score(X, labels)
+    db_score = davies_bouldin_score(X, labels)
+
+    print(f"Silhouette Score        : {sil_score:.3f}")
+    print(f"Davies-Bouldin Index    : {db_score:.3f}")
+
 
     df["cluster"] = labels
     df.to_csv("results/clustered_features.csv", index=False)
