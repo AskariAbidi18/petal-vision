@@ -1,4 +1,3 @@
-# petal-vision
 # Petal-Vision 🌸
 **Unsupervised Flower Image Analysis using Classical Digital Image Processing**
 
